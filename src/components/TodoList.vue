@@ -7,15 +7,24 @@
       <div>
         <button
           className="mx-2 border-5 rounded bg-blue-600 px-4 py-2 text-white"
+          @click="addItem()"
         >
           Add an item
         </button>
         <button
           className="mx-2 border-5 rounded bg-red-500 px-4 py-2 text-white"
+          @click="deleteFromItems({ user_id: store.state.user.id })"
         >
           Remove all items
         </button>
       </div>
+    </div>
+    <div
+      v-if="!items.length"
+      className="flex flex-col text-center justify-center items-center mt-6"
+    >
+      <h1 className="text-gray-800 text-xl">Your ToDo List is empty</h1>
+      <p className="mt-2 text-gray-600 text-sm">start adding items</p>
     </div>
     <div className="grid grid-cols-3 gap-4 mx-4">
       <div
@@ -23,9 +32,12 @@
         :key="item.id"
         className="max-w-md py-4 px-8 bg-white shadow-lg rounded-lg my-20"
       >
-        <h2 className="text-gray-800 text-xl font-semibold">
-          {{ item.title }}
-        </h2>
+        <div className="flex flex-row justify-between items-center">
+          <h2 className="text-gray-800 text-xl font-semibold">
+            {{ item.title }}
+          </h2>
+          <button @click="deleteFromItems({ id: item.id })"></button>
+        </div>
         <p className="mt-2 text-gray-600 text-sm">
           {{ item.detail }}
         </p>
@@ -51,6 +63,7 @@ export default {
 
     async function getItems() {
       try {
+        loading.value = true
         const { data, error, status } = await supabase
           .from('items')
           .select()
@@ -67,10 +80,50 @@ export default {
       }
     }
 
+    async function addItem() {
+      try {
+        loading.value = true
+        const item = {
+          title: 'Programmatic Insert',
+          detail: 'Testing programmatic insert',
+          user_id: store.state.user.id
+        }
+        const { data, error, status } = await supabase
+          .from('items')
+          .insert(item, { returning: 'representation' })
+        console.log('Data returned after insert : ')
+        console.log(data)
+        if (error && status !== 406) throw error
+      } catch (error) {
+        alert('An error occurred !')
+      } finally {
+        getItems()
+      }
+    }
+
+    async function deleteFromItems(matchingFilter) {
+      try {
+        loading.value = true
+        const { data, error, status } = await supabase
+          .from('items')
+          .delete({ returning: 'representation' })
+          .match(matchingFilter)
+        console.log('Data successfully deleted : ')
+        console.log(data)
+        if (error && status !== 406) throw error
+      } catch (error) {
+        alert('An error occurred !')
+      } finally {
+        getItems()
+      }
+    }
+
     return {
       items,
       loading,
-      store
+      store,
+      addItem,
+      deleteFromItems
     }
   }
 }
