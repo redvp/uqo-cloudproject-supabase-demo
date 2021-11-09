@@ -11,9 +11,14 @@ const routes = [
     path: '/todo/:id',
     name: 'TodoList',
     component: TodoList,
-    beforeEnter: () => {
-      alert('You need to login before accessing a ToDo List')
-      if (!store.state.user.id) {
+    // Basic auth guard
+    beforeEnter: to => {
+      if (
+        // Test is probably inaccurate because store.state.user returns a proxy
+        store.state.user.id == undefined ||
+        store.state.user.id != to.params.id
+      ) {
+        alert('You need to login before accessing a ToDo List')
         router.push({ name: 'home' })
       }
     }

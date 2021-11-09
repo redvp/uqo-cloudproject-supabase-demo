@@ -70,8 +70,7 @@ export default {
     return {
       items,
       loading,
-      store,
-      getItems
+      store
     }
   }
 }
