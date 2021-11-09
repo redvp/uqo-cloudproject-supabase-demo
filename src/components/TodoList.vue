@@ -1,18 +1,18 @@
 <template>
   <div v-if="!loading">
     <div className="flex justify-between items-center mx-4">
-      <h1 className="font-bold text-center text-2xl">
-        {{ store.state.user.username }}'s ToDo List
-      </h1>
+      <div className="font-bold text-center text-2xl">
+        <h1>{{ store.state.user.username }}'s ToDo List</h1>
+      </div>
       <div>
         <button
-          className="mx-2 border-5 rounded bg-blue-600 px-4 py-2 text-white"
+          className="mx-2 border-5 rounded bg-blue-600 px-2 py-1 text-white"
           @click="addItem()"
         >
           Add an item
         </button>
         <button
-          className="mx-2 border-5 rounded bg-red-500 px-4 py-2 text-white"
+          className="mx-2 border-5 rounded bg-red-500 px-2 py-1 text-white"
           @click="deleteFromItems({ user_id: store.state.user.id })"
         >
           Remove all items
@@ -23,7 +23,7 @@
       v-if="!items.length"
       className="flex flex-col text-center justify-center items-center mt-6"
     >
-      <h1 className="text-gray-800 text-xl">Your ToDo List is empty</h1>
+      <h1 className="text-gray-800 text-xl">Your ToDo List is empty !</h1>
       <p className="mt-2 text-gray-600 text-sm">start adding items</p>
     </div>
     <div className="grid grid-cols-3 gap-4 mx-4">
@@ -36,10 +36,15 @@
           <h2 className="text-gray-800 text-xl font-semibold">
             {{ item.title }}
           </h2>
-          <button @click="deleteFromItems({ id: item.id })"></button>
+          <button
+            className="mx-2 border-5 rounded bg-red-500 px-2 py-1 text-white"
+            @click="deleteFromItems({ id: item.id })"
+          >
+            Delete
+          </button>
         </div>
         <p className="mt-2 text-gray-600 text-sm">
-          {{ item.detail }}
+          <strong>{{ item.id }} : </strong> {{ item.detail }}
         </p>
       </div>
     </div>
@@ -85,7 +90,7 @@ export default {
         loading.value = true
         const item = {
           title: 'Programmatic Insert',
-          detail: 'Testing programmatic insert',
+          detail: 'Testing programmatic inserts',
           user_id: store.state.user.id
         }
         const { data, error, status } = await supabase
